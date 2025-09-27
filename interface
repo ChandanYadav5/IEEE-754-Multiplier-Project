@@ -1,0 +1,6 @@
+interface sp_floating_point_multiplier_if(input logic clk);
+
+    
+    logic [31:0]a,b,c;
+
+endinterface: sp_floating_point_multiplier_if
