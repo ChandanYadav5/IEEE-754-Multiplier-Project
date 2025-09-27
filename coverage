@@ -1,0 +1,67 @@
+// UVM Subscriber for Single Precision Floating Point Multiplier
+class sp_floating_point_multiplier_coverage extends uvm_subscriber #(sp_floating_point_multiplier_sequence_item);
+
+  `uvm_component_utils(sp_floating_point_multiplier_coverage)
+
+  sp_floating_point_multiplier_sequence_item t; // Transaction object
+
+
+  // Coverage Group for the Floating-Point Multiplier
+  covergroup cg_group with function sample(sp_floating_point_multiplier_sequence_item t);
+    option.per_instance = 1;
+    option.name = "Cover_of_Input";
+
+    // Input Sign Coverage
+    coverpoint t.a[31] { // Sign bit of `a`
+      bins sign_a[] = {0, 1};
+    }
+    coverpoint t.b[31] { // Sign bit of `b`
+      bins sign_b[] = {0, 1};
+    }
+
+    // Exponent Coverage
+    coverpoint t.a[30:23] {
+      bins exp_range = {[1:254]};   // Normal range
+      bins zero_exp = {0};          // Zero exponent
+      bins inf_exp = {255};         // Infinity/NaN exponent
+    }
+    coverpoint t.b[30:23] {
+      bins exp_range = {[1:254]};   // Normal range
+      bins zero_exp = {0};          // Zero exponent
+      bins inf_exp = {255};         // Infinity/NaN exponent
+    }
+
+    // Mantissa Coverage
+    coverpoint t.a[22:0] {
+      bins min_mantissa = {23'b1};       // Smallest positive mantissa
+      bins max_mantissa = {23'h7FFFFF}; // Largest mantissa
+      bins zero_mantissa = {23'b0};     // Zero mantissa
+    }
+    coverpoint t.b[22:0] {
+      bins min_mantissa = {23'b1};       // Smallest positive mantissa
+      bins max_mantissa = {23'h7FFFFF}; // Largest mantissa
+      bins zero_mantissa = {23'b0};     // Zero mantissa
+    }
+
+
+  endgroup : cg_group
+
+  // Constructor
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+    cg_group = new(); // Instantiate the covergroup
+  endfunction
+
+  // Write Transaction (Called by Monitor)
+  virtual function void write(sp_floating_point_multiplier_sequence_item t);
+    if (t == null) begin
+      `uvm_error("WRITE", "Null transaction received in coverage")
+      return;
+    end
+
+    cg_group.sample(t); // Sample coverage with the provided transaction
+  endfunction
+
+endclass : sp_floating_point_multiplier_coverage
+
+
