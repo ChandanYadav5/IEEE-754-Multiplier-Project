@@ -1,0 +1,107 @@
+class sp_floating_point_multiplier_scoreboard extends uvm_scoreboard;
+  `uvm_component_utils(sp_floating_point_multiplier_scoreboard)
+  
+  uvm_analysis_imp #(sp_floating_point_multiplier_sequence_item, sp_floating_point_multiplier_scoreboard) scb_port;
+
+  
+  sp_floating_point_multiplier_sequence_item item[$];
+  sp_floating_point_multiplier_sequence_item s_item;
+  int test_cnt=0;
+  int test_valid=0;
+  int test_invalid=0;
+  
+
+
+  
+  function new(string name = "sp_floating_point_multiplier_scoreboard", uvm_component parent);
+    super.new(name, parent);
+    `uvm_info("SCB_CLASS", "Inside Constructor!", UVM_HIGH)
+   
+  endfunction: new
+  
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    `uvm_info("SCB_CLASS", "Build Phase!", UVM_HIGH)
+    scb_port=new("scb_port",this);
+
+  endfunction: build_phase
+  
+  
+  function void connect_phase(uvm_phase phase);
+    super.connect_phase(phase);
+    `uvm_info("SCB_CLASS", "Connect Phase!", UVM_HIGH)
+   
+  endfunction: connect_phase
+  
+  function void write (sp_floating_point_multiplier_sequence_item rx_item);
+    item.push_front(rx_item);
+  endfunction
+  
+  task run_phase(uvm_phase phase);
+    super.run_phase(phase);
+    forever  begin
+      s_item=sp_floating_point_multiplier_sequence_item::type_id::create("s_item");
+      wait((item.size() != 0));
+      s_item=item.pop_front();
+      compare(s_item);    
+      test_cnt++;
+    end
+  endtask
+  
+  function void compare(sp_floating_point_multiplier_sequence_item item);
+    logic [31:0] ex_res; 
+    int vim;
+    ex_res =floatOperations(item.a, item.b);
+          vim =  errors(ex_res, item.c); 
+    
+    if (vim == 0)begin
+      `uvm_info(get_name,$sformatf("[%0d/%0d] Test Passed",test_cnt,`TEST_COUNT),UVM_HIGH);
+      test_analysis(item,ex_res,1);
+      test_valid++;
+    end   
+    else if( vim == 1)begin
+      `uvm_error(get_name,$sformatf("[%0d/%0d] Test failed",test_cnt,`TEST_COUNT));
+      test_analysis(item,ex_res,1);
+      test_invalid++;
+    end
+  endfunction
+  
+  function void test_analysis(sp_floating_point_multiplier_sequence_item item, logic [31:0] ex_res,bit flag);
+    if(flag) begin
+      $display("--------------------------------------------------------------------------------");
+      $display(" a= 32'h%0h ;  b= 32'h%0h ; c=32'h%0h  \n expected = %0h",item.a, item.b, item.c , ex_res);
+    end
+  endfunction    
+    
+            real percentage_pass_test; 
+
+            real percentage_fail_test; 
+              
+      function real calculate_percentage(input int value, input int total);
+        if (total == 0) begin
+            $display("Error: Total value cannot be zero.");
+            return 0.0;
+        end
+        return (value * 100.0) / total;
+    endfunction   
+  
+  function void report_phase(uvm_phase phase);
+    super.report_phase(phase);
+     percentage_pass_test = calculate_percentage(test_valid, test_cnt);
+     percentage_fail_test = calculate_percentage(test_invalid, test_cnt);
+    `uvm_info(get_name(),$sformatf("Total tests: %0d",test_cnt),UVM_LOW)
+    `uvm_info(get_name(),$sformatf("Passed tests: %0d",test_valid),UVM_LOW)
+    `uvm_info(get_name(),$sformatf("Failed  tests: %0d",test_invalid),UVM_LOW)
+    
+    `uvm_info(get_name(),$sformatf("Percentage of Passed tests: %0f Percentage",percentage_pass_test),UVM_LOW)
+    `uvm_info(get_name(),$sformatf("Percentage of failed tests: %0f Percentage",percentage_fail_test),UVM_LOW)
+    
+  endfunction
+endclass
+
+
+
+
+
+
