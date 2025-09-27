@@ -1,0 +1,38 @@
+class sp_floating_point_multiplier_driver extends uvm_driver #(sp_floating_point_multiplier_sequence_item);
+  `uvm_component_utils(sp_floating_point_multiplier_driver)
+  virtual sp_floating_point_multiplier_if vif;
+  sp_floating_point_multiplier_sequence_item item;
+
+  function new(string name="sp_floating_point_multiplier_driver",uvm_component parent);
+      super.new(name,parent);
+      `uvm_info("sp_floating_point_multiplier_driver", "Inside constructor of sp_floating_point_multiplier_driver", UVM_HIGH)      
+  endfunction
+
+  function void build_phase(uvm_phase phase);
+      super.build_phase(phase);
+      `uvm_info(get_name(), "Inside build phase", UVM_HIGH)
+    if(!(uvm_config_db #(virtual sp_floating_point_multiplier_if)::get(this,"*","sp_floating_point_multiplier_vif",vif)))
+          `uvm_error(get_name(), "Faild to get Virtual IF from database........")
+  endfunction: build_phase
+
+  task run_phase(uvm_phase phase);
+      super.run_phase(phase);
+      `uvm_info(get_name(), "Inside run phase", UVM_HIGH)
+    forever begin
+      item=sp_floating_point_multiplier_sequence_item::type_id::create("item");
+      seq_item_port.get_next_item(item);
+      drive(item);
+      //item.print();
+      seq_item_port.item_done();
+    end
+  endtask
+
+
+task drive(sp_floating_point_multiplier_sequence_item item);
+  `uvm_info(get_name(),"Drive...",UVM_HIGH)
+  @(posedge vif.clk);
+  vif.a <= item.a;
+  vif.b <= item.b;
+endtask
+
+endclass: sp_floating_point_multiplier_driver
