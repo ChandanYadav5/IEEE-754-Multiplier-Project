@@ -1,0 +1,28 @@
+class sp_floating_point_multiplier_agent extends uvm_agent;
+    `uvm_component_utils(sp_floating_point_multiplier_agent)
+  	sp_floating_point_multiplier_driver drv;
+  	sp_floating_point_multiplier_monitor mon;
+  	sp_floating_point_multiplier_sequencer seqr;
+
+    function new(string name="sp_floating_point_multiplier_agent",uvm_component parent);
+        super.new(name,parent);
+        `uvm_info("sp_floating_point_multiplier_agent", "Inside constructor of sp_floating_point_multiplier_agent", UVM_HIGH)
+    endfunction
+
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        `uvm_info(get_name(), "Inside build phase", UVM_HIGH)
+      
+      	drv=sp_floating_point_multiplier_driver::type_id::create("drv",this);
+      	mon=sp_floating_point_multiplier_monitor::type_id::create("mon",this);
+      	seqr=sp_floating_point_multiplier_sequencer::type_id::create("seqr",this);
+      
+    endfunction: build_phase
+
+    function void connect_phase(uvm_phase phase);
+        super.connect_phase(phase);
+        `uvm_info(get_name(), "Inside connect phase", UVM_HIGH)
+        drv.seq_item_port.connect(seqr.seq_item_export);
+    endfunction
+
+endclass: sp_floating_point_multiplier_agent
