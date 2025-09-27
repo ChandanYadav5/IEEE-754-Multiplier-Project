@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdint.h>
+
+// Define the threshold 2^-22
+#define THRESHOLD (1.0f / (1 << 20)) // Use 'f' for single-precision
+
+ extern "C" int floatOperations(int op1, int op2) {
+  //   int floatOperations(int op1, int op2) {
+    float floatOp1 = *(float*)&op1;
+    float floatOp2 = *(float*)&op2;
+    float floatResult;
+
+            floatResult = floatOp1 * floatOp2;
+             return *(int*)&floatResult;
+     
+}
+
+extern "C" int errors(int op1, int op2 ) {
+    float ideal = *(float*)&op1;
+    float actual = *(float*)&op2;
+    float relative_error;
+        // Calculate the relative error
+          relative_error = fabs((ideal - actual) / ideal);
+         // Check if the relative error exceeds the threshold
+    if (relative_error > THRESHOLD) {
+        printf("Relative error (%.10f) exceeds threshold (%.10f).\n", relative_error, THRESHOLD);
+        
+        return 1;
+    } else {
+    //    printf("Relative error (%.10f) is within threshold (%.10f).\n", relative_error, THRESHOLD);
+                
+        return 0;
+    }
+}
+
+
+
+
+
+
+
+
