@@ -1,0 +1,28 @@
+class sp_floating_point_multiplier_sequence_item extends uvm_sequence_item;
+
+  randc logic [31:0] a;
+  randc logic [31:0] b;
+        logic [31:0] c;
+
+
+  function new(string name="sp_floating_point_multiplier_sequence_item");
+    super.new(name);
+  endfunction
+
+  // Constraint to ensure the exponent bits of `a` are never zero
+  constraint nonzero_exponent {
+    (a & 32'h7F800000)!= 0; // Exponent bits (23 to 30) must not all be zero
+  }
+  
+    // Constraint to ensure the exponent bits of `a` are never zero
+ constraint nonzero_exponent1 {
+   (b & 32'h7F800000) != 0; // Exponent bits (23 to 30) must not all be zero
+ }
+
+`uvm_object_utils_begin(sp_floating_point_multiplier_sequence_item)
+    `uvm_field_int(a, UVM_ALL_ON)
+    `uvm_field_int(b, UVM_ALL_ON)
+    `uvm_field_int(c, UVM_ALL_ON)
+  `uvm_object_utils_end
+
+endclass
