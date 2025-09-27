@@ -1,0 +1,28 @@
+class sp_floating_point_multiplier_env extends uvm_env;
+    `uvm_component_utils(sp_floating_point_multiplier_env)
+
+    sp_floating_point_multiplier_agent agent;
+    sp_floating_point_multiplier_scoreboard scb;
+    sp_floating_point_multiplier_coverage cov_subscriber; // Declare the coverage subscriber
+
+    function new(string name = "sp_floating_point_multiplier_env", uvm_component parent = null);
+        super.new(name, parent);
+        `uvm_info("sp_floating_point_multiplier_env", "Inside constructor of sp_floating_point_multiplier_env", UVM_HIGH)
+    endfunction
+
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        `uvm_info(get_name(), "Inside build phase", UVM_HIGH)
+        agent = sp_floating_point_multiplier_agent::type_id::create("agent", this);
+        scb = sp_floating_point_multiplier_scoreboard::type_id::create("scb", this);
+        cov_subscriber = sp_floating_point_multiplier_coverage::type_id::create("cov_subscriber", this); // Instantiate the coverage subscriber
+    endfunction : build_phase
+
+    function void connect_phase(uvm_phase phase);
+        super.connect_phase(phase);
+        `uvm_info(get_name(), "Inside connect phase", UVM_HIGH)
+        agent.mon.mon_port.connect(scb.scb_port);
+        agent.mon.cov_port.connect(cov_subscriber.analysis_export); // Connect the monitor to the coverage subscriber
+    endfunction : connect_phase
+
+endclass : sp_floating_point_multiplier_env
