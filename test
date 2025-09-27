@@ -1,0 +1,60 @@
+class sp_floating_point_multiplier_test extends uvm_test;
+    `uvm_component_utils(sp_floating_point_multiplier_test)
+
+  	sp_floating_point_multiplier_env env; 
+
+    function new(string name="sp_floating_point_multiplier_test",uvm_component parent);
+        super.new(name,parent);
+        `uvm_info("sp_floating_point_multiplier_test", "Inside constructor of sp_floating_point_multiplier_test", UVM_HIGH)
+    endfunction
+
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        `uvm_info(get_name(), "Inside build phase", UVM_HIGH)
+     	 env=sp_floating_point_multiplier_env::type_id::create("env",this);
+    endfunction: build_phase
+
+    function void connect_phase(uvm_phase phase);
+        super.connect_phase(phase);
+        `uvm_info(get_name(), "Inside connect phase", UVM_HIGH)
+    endfunction
+endclass: sp_floating_point_multiplier_test
+
+class sp_floating_point_multiplier_add_test extends sp_floating_point_multiplier_test;
+    `uvm_component_utils(sp_floating_point_multiplier_add_test)
+
+    sp_floating_point_multiplier_add_seq add_seq;
+
+    function new(string name="sp_floating_point_multiplier_add_test",uvm_component parent);
+        super.new(name,parent);
+        `uvm_info("sp_floating_point_multiplier_add_test", "Inside constructor of sp_floating_point_multiplier_add_test", UVM_HIGH)
+    endfunction
+
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        `uvm_info(get_name(), "Inside build phase", UVM_HIGH)
+
+    endfunction: build_phase
+
+    function void connect_phase(uvm_phase phase);
+        super.connect_phase(phase);
+        `uvm_info(get_name(), "Inside connect phase", UVM_HIGH)
+    endfunction
+
+    task run_phase(uvm_phase phase);
+      super.run_phase(phase);
+      `uvm_info(get_name(), "Inside run phase", UVM_HIGH)
+      	
+      phase.raise_objection(this);
+
+      repeat(`TEST_COUNT) begin
+        add_seq=sp_floating_point_multiplier_add_seq::type_id::create("add_seq");
+        add_seq.start(env.agent.seqr);
+      end
+      wait(env.scb.test_cnt==`TEST_COUNT);
+
+      phase.drop_objection(this);
+        
+    endtask
+
+endclass
