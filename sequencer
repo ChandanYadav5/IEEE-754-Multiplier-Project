@@ -1,0 +1,19 @@
+class sp_floating_point_multiplier_sequencer extends uvm_sequencer #(sp_floating_point_multiplier_sequence_item);
+    `uvm_component_utils(sp_floating_point_multiplier_sequencer)
+    function new(string name="sp_floating_point_multiplier_sequencer",uvm_component parent);
+        super.new(name,parent);
+      `uvm_info("sp_floating_point_multiplier_sequencer", "Inside constructor of sp_floating_point_multiplier_sequencer", UVM_HIGH)
+    endfunction
+
+
+    function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
+        `uvm_info(get_name(), "Inside build phase", UVM_HIGH)
+    endfunction: build_phase
+
+    function void connect_phase(uvm_phase phase);
+        super.connect_phase(phase);
+        `uvm_info(get_name(), "Inside connect phase", UVM_HIGH)
+    endfunction
+
+endclass: sp_floating_point_multiplier_sequencer
