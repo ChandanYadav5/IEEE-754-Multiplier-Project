@@ -1,0 +1,59 @@
+`include "uvm_macros.svh"
+import uvm_pkg::*;
+
+import "DPI-C" function int floatOperations(int op1, int op2);
+import "DPI-C" function int errors(int op1, int op2 );
+
+`define TEST_COUNT 200
+`include "interface.sv"
+`include "sequence_items.sv"
+`include "sequencer.sv"
+`include "sequence.sv"
+`include "driver.sv"
+`include "monitor.sv"
+`include "scoreboard.sv"
+`include "coverage.sv"
+`include "agent.sv"
+`include "environment.sv"
+`include "test.sv"
+`timescale 1ns/1ns
+`include "uvm_macros.svh"
+
+
+module top;
+
+    bit clk=0;
+
+    sp_floating_point_multiplier_if top_if(clk);
+
+mult_comb dut(      
+      .a          (top_if.a),   
+      .b          (top_if.b),   
+      .c          (top_if.c)  
+                        );
+    initial forever #0.5 clk=~clk;
+
+
+ 	initial begin
+      uvm_config_db #(virtual sp_floating_point_multiplier_if) :: set(null,"*","sp_floating_point_multiplier_vif",top_if);
+      `uvm_info("TOP","Configured database for interface...",UVM_LOW)
+    end
+
+    initial begin
+      run_test("sp_floating_point_multiplier_test");
+    end
+  
+  initial begin
+    $dumpfile("waveform.vcd");
+    $dumpvars;
+  end
+ initial begin
+    $dumpfile("waveform.fsdb");
+    $dumpvars(0,top);
+  end
+
+  initial begin
+    #10000000;
+    $finish();
+  end
+endmodule
