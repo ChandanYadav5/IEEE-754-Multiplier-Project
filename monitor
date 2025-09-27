@@ -1,0 +1,47 @@
+class sp_floating_point_multiplier_monitor extends uvm_monitor;
+  `uvm_component_utils(sp_floating_point_multiplier_monitor)
+  virtual sp_floating_point_multiplier_if vif;
+  sp_floating_point_multiplier_sequence_item item;
+  
+  uvm_analysis_port #(sp_floating_point_multiplier_sequence_item) mon_port;
+    uvm_analysis_port #(sp_floating_point_multiplier_sequence_item) cov_port;
+  function new(string name="sp_floating_point_multiplier_monitor",uvm_component parent);
+      super.new(name,parent);
+    `uvm_info("sp_floating_point_multiplier_monitor", "Inside constructor of sp_floating_point_multiplier_monitor", UVM_HIGH)
+  endfunction
+
+  function void build_phase(uvm_phase phase);
+      super.build_phase(phase);
+      `uvm_info(get_name(), "Inside build phase", UVM_HIGH)    
+    mon_port=new("mon_port",this);
+     cov_port=new("cov_port",this);
+      if(!(uvm_config_db #(virtual sp_floating_point_multiplier_if)::get(this,"*","sp_floating_point_multiplier_vif",vif)))
+        `uvm_error(get_name(), "Faild to get Virtual IF from database...")          
+  endfunction: build_phase
+
+  function void connect_phase(uvm_phase phase);
+      super.connect_phase(phase);
+      `uvm_info(get_name(), "Inside connect phase", UVM_HIGH)
+  endfunction
+
+  task run_phase(uvm_phase phase);
+      super.run_phase(phase);
+      `uvm_info(get_name(), "Inside run phase", UVM_HIGH)
+      forever begin
+        item=sp_floating_point_multiplier_sequence_item::type_id::create("item");
+        sample(item);
+        `uvm_info(get_name(),"Item received!!",UVM_HIGH)
+        mon_port.write(item);
+        cov_port.write(item);
+      end
+  endtask
+
+
+  task sample(sp_floating_point_multiplier_sequence_item item);
+   @(posedge vif.clk); 
+    item.a=vif.a;
+    item.b=vif.b;
+    item.c=vif.c;
+  endtask
+
+endclass: sp_floating_point_multiplier_monitor
