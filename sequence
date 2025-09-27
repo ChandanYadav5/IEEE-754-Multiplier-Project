@@ -1,0 +1,31 @@
+class sp_floating_point_multiplier_base_sequence extends uvm_sequence;
+  `uvm_object_utils(sp_floating_point_multiplier_base_sequence)
+  sp_floating_point_multiplier_sequence_item sp_floating_point_multiplier_item;
+
+  function new(string name="sp_floating_point_multiplier_sequence");
+      super.new(name);
+  endfunction
+
+endclass: sp_floating_point_multiplier_base_sequence
+
+
+
+class sp_floating_point_multiplier_add_seq extends sp_floating_point_multiplier_base_sequence;
+
+  `uvm_object_utils(sp_floating_point_multiplier_add_seq)
+  sp_floating_point_multiplier_sequence_item item;
+
+  function new(string name="sp_floating_point_multiplier_add_seq");
+    super.new(name);
+  endfunction
+
+  task body();
+    `uvm_info(get_name(),"Running main sequence...",UVM_HIGH);
+
+    item=sp_floating_point_multiplier_sequence_item::type_id::create("item");
+    start_item(item);
+    item.randomize() ;                     
+  finish_item(item);
+  endtask
+
+endclass
